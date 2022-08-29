@@ -1,6 +1,7 @@
 package ru.vk.competition.minbenchmark.ui.request;
 
 import lombok.Data;
+import ru.vk.competition.minbenchmark.util.ConstraintsUtil;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -14,11 +15,11 @@ public class TableQueryRequest {
     private Integer queryId;
 
     @NotBlank
-//    @Size(max = 50)
+    @Size(min = 1, max = ConstraintsUtil.TABLE_NAME_MAX_SIZE)
+    @Pattern(regexp = ConstraintsUtil.IDENTIFIER_PATTERN)
     private String tableName;
 
     @NotBlank
-//    @Size(max = 120)
-//    @Pattern(regexp = "[a-zA-Z][*\\s\\w()-+/,;]+")
+    @Size(min = 1, max = ConstraintsUtil.SQL_MAX_SIZE)
     private String query;
 }

@@ -22,6 +22,7 @@ import ru.vk.competition.minbenchmark.exception.TableQueryNotExistsException500;
 import ru.vk.competition.minbenchmark.repository.TableQueryRepository;
 import ru.vk.competition.minbenchmark.ui.request.TableQueryRequest;
 import ru.vk.competition.minbenchmark.ui.response.TableQueryResponse;
+import ru.vk.competition.minbenchmark.util.ConstraintsUtil;
 
 import java.util.Optional;
 
@@ -65,10 +66,6 @@ public class TableQueryService {
     @Transactional
     public Mono<ResponseEntity<Void>> modifyQueryInTable(TableQueryRequest request) {
         Assert.notNull(request, "Query request should not be null");
-
-        // не в JSON потому что иначе create валится
-        Assert.isTrue(request.getTableName().length() <= 50, "Table name must be <= 50");
-        Assert.isTrue(request.getQuery().length() <= 120, "Query must be <= 120");
 
         if (!tableManagerDao.tableExists(request.getTableName())) {
             String errorMessage = String.format("The table %s not exists!", request.getTableName());

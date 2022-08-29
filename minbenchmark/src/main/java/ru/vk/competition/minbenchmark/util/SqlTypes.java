@@ -21,13 +21,13 @@ public class SqlTypes {
     private static Set<String> typesSet() {
         return Set.of(
                 // strings
-                "CHAR\\(\\d+\\)",
+                "CHAR\\s*\\(\\s*\\d+\\s*\\)",
                 "CHAR",
-                "CHARACTER\\(\\d+\\)",
+                "CHARACTER\\s*\\(\\s*\\d+\\s*\\)",
                 "CHARACTER",
-                "VARCHAR\\(\\d+\\)",
+                "VARCHAR\\s*\\(\\s*\\d+\\s*\\)",
                 "VARCHAR",
-                "NVARCHAR\\(\\d+\\)",
+                "NVARCHAR\\s*\\(\\s*\\d+\\s*\\)",
                 "NVARCHAR",
                 "TINYTEXT",
                 "TEXT",
@@ -37,16 +37,16 @@ public class SqlTypes {
                 "MEDIUMBLOB",
                 "LONGTEXT",
                 "LONGBLOB",
-                "ENUM\\([\\w,]+]\\)",
+                "ENUM\\s*\\(\\s*'[^']+'(\\s*,?\\s*'[^']+')*?\\s*\\)",
                 "SET",
                 // integers
-                "TINYINT\\(\\d+\\)",
+                "TINYINT\\s*\\(\\s*\\d+\\s*\\)",
                 "TINYINT",
-                "SMALLINT\\(\\d+\\)",
+                "SMALLINT\\s*\\(\\s*\\d+\\s*\\)",
                 "SMALLINT",
-                "MEDIUMINT\\(\\d+\\)",
+                "MEDIUMINT\\s*\\(\\s*\\d+\\s*\\)",
                 "MEDIUMINT",
-                "INT\\(\\d+\\)",
+                "INT\\s*\\(\\s*\\d+\\s*\\)",
                 "BIGINT",
                 "B1GINT",
                 "SERIAL",
@@ -57,12 +57,12 @@ public class SqlTypes {
                 "INT4",
                 "INT8",
                 // float
-                "FLOAT\\(\\d+,\\s*\\d+\\)",
+                "FLOAT\\s*\\(\\s*\\d+,\\s*\\d+\\s*\\)",
                 "FLOAT4",
                 "REAL",
-                "DOUBLE\\(\\d+,\\s*\\d+\\)",
-                "DECIMAL\\(\\d+,\\s*\\d+\\)",
-                "NUMERIC\\(\\d+,\\s*\\d+\\)",
+                "DOUBLE\\s*\\(\\s*\\d+,\\s*\\d+\\s*\\)",
+                "DECIMAL\\s*\\(\\s*\\d+,\\s*\\d+\\s*\\)",
+                "NUMERIC\\s*\\(\\s*\\d+,\\s*\\d+\\s*\\)",
                 "MONEY",
                 // date and time
                 "DATE()",
@@ -76,7 +76,7 @@ public class SqlTypes {
                 "YEAR()",
                 "YEAR",
                 //
-                "BINARY\\(\\d+\\)",
+                "BINARY\\s*\\(\\s*\\d+\\s*\\)",
                 "BINARY",
                 "BIT"
         );
