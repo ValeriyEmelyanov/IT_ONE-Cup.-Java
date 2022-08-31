@@ -17,7 +17,7 @@ import javax.persistence.Table;
 @Data
 @Builder
 @Entity
-@Table(name = "report_table_column")
+@Table(name = "app_report_table_column")
 @NoArgsConstructor
 @AllArgsConstructor
 public class ReportTableColumn {

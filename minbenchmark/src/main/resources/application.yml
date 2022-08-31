@@ -13,6 +13,12 @@ spring:
     driverClassName: org.h2.Driver
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
+    properties:
+      hibernate.default_schema: APP_TABLES
+  sql:
+    init:
+      schema-locations: classpath:db/schema.sql
+      mode: always
 logging:
   level:
     org: warn

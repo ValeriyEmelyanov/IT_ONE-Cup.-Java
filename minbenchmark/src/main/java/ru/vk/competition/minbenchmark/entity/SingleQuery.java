@@ -13,7 +13,7 @@ import javax.persistence.Table;
 @Data
 @Builder
 @Entity
-@Table(name = "single_query")
+@Table(name = "app_single_query")
 @NoArgsConstructor
 @AllArgsConstructor
 public class SingleQuery {

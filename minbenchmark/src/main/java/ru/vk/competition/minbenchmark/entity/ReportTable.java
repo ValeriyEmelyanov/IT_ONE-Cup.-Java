@@ -21,7 +21,7 @@ import java.util.List;
 @Data
 @Builder
 @Entity
-@Table(name = "report_table")
+@Table(name = "app_report_table")
 @NoArgsConstructor
 @AllArgsConstructor
 public class ReportTable {
