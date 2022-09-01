@@ -17,6 +17,7 @@ import ru.vk.competition.minbenchmark.exception.SingleQueryNotExistsException500
 import ru.vk.competition.minbenchmark.repository.SingleQueryRepository;
 import ru.vk.competition.minbenchmark.ui.request.SingleQueryRequest;
 import ru.vk.competition.minbenchmark.ui.response.SingleQueryResponse;
+import ru.vk.competition.minbenchmark.util.ConstraintsUtil;
 
 import java.util.Optional;
 
@@ -74,6 +75,8 @@ public class SingleQueryService {
 
     public Mono<ResponseEntity<Void>> addQueryWithQueryId(SingleQueryRequest request) {
         Assert.notNull(request, "SingleQuery should not be null");
+        Assert.isTrue(ConstraintsUtil.isSqlSafety(request.getQuery()),
+                "The query contains a forbidden instruction");
 
         return Mono.fromCallable(() -> {
             queryRepository.save(new SingleQuery(request.getQueryId(), request.getQuery()));
@@ -83,6 +86,8 @@ public class SingleQueryService {
 
     public Mono<ResponseEntity<Void>> updateQueryWithQueryId(SingleQueryRequest request) {
         Assert.notNull(request, "SingleQuery should not be null");
+        Assert.isTrue(ConstraintsUtil.isSqlSafety(request.getQuery()),
+                "The query contains a forbidden instruction");
 
         return Mono.fromCallable(() -> {
             queryRepository.findByQueryId(request.getQueryId())

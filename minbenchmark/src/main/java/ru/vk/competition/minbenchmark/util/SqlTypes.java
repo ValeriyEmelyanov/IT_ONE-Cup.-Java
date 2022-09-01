@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 
 public class SqlTypes {
     private static final Map<String, Pattern> TYPES = new HashMap<>();
-    private static final Pattern COMMON = Pattern.compile("[A-Z][ A-Z0-9(),.]+");
+    private static final Pattern COMMON_PATTERN = Pattern.compile("[A-Z][ A-Z0-9(),.]+");
 
     private SqlTypes() {
     }
@@ -87,7 +87,7 @@ public class SqlTypes {
             return true;
         }
 
-        Matcher matcher = COMMON.matcher(type);
+        Matcher matcher = COMMON_PATTERN.matcher(type);
         if (!matcher.matches()) {
             return false;
         }

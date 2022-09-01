@@ -38,6 +38,8 @@ public class TableQueryService {
     @Transactional
     public Mono<ResponseEntity<Void>> addQueryWithQueryId(TableQueryRequest request) {
         Assert.notNull(request, "Query request should not be null");
+        Assert.isTrue(ConstraintsUtil.isSqlSafety(request.getQuery()),
+                "The query contains a forbidden instruction");
 
         log.info("Adding table query request ...");
 
@@ -66,6 +68,8 @@ public class TableQueryService {
     @Transactional
     public Mono<ResponseEntity<Void>> modifyQueryInTable(TableQueryRequest request) {
         Assert.notNull(request, "Query request should not be null");
+        Assert.isTrue(ConstraintsUtil.isSqlSafety(request.getQuery()),
+                "The query contains a forbidden instruction");
 
         if (!tableManagerDao.tableExists(request.getTableName())) {
             String errorMessage = String.format("The table %s not exists!", request.getTableName());
