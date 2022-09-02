@@ -26,7 +26,7 @@ public class ConstraintsUtil {
     private ConstraintsUtil() {
     }
 
-    public static boolean isSqlSafety(String sql ) {
+    public static boolean isSqlSafety(String sql) {
         for (Pattern pattern : NOT_ALLOWED_SQL_PATTERNS) {
             Matcher matcher = pattern.matcher(sql);
             if (matcher.matches()) {
