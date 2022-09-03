@@ -6,6 +6,7 @@ import com.example.r2dbcpreform.repository.SingleQueryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -54,4 +55,14 @@ public class SingleQueryController {
                         new SingleQueryNotExistsException("Query with id " + queryId + " not found")));
     }
 
+    @DeleteMapping("/{id}")
+    public Mono<ResponseEntity<Void>> deleteById(@PathVariable("id") Integer queryId) {
+        return singleQueryRepository.findById(queryId)
+                .flatMap(q -> singleQueryRepository.deleteById(queryId)
+                        .then(Mono.just(new ResponseEntity<Void>(HttpStatus.OK)))
+                )
+                .switchIfEmpty(Mono.error(() ->
+                        new SingleQueryNotExistsException("Query with id " + queryId + " not found")));
+                //.defaultIfEmpty(new ResponseEntity<Void>(HttpStatus.NOT_ACCEPTABLE));
+    }
 }
