@@ -36,6 +36,14 @@
 			<artifactId>r2dbc-h2</artifactId>
 			<scope>runtime</scope>
 		</dependency>
+<!--	{ h2-console-->
+		<dependency>
+			<groupId>me.yaman.can</groupId>
+			<artifactId>spring-boot-webflux-h2-console</artifactId>
+			<version>0.0.1</version>
+			<optional>true</optional>
+		</dependency>
+<!--	} h2-console-->
 
 		<dependency>
 			<groupId>org.projectlombok</groupId>
