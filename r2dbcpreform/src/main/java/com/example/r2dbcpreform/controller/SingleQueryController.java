@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -32,6 +33,16 @@ public class SingleQueryController {
     public Mono<ResponseEntity<Void>> create(@RequestBody SingleQuery query) {
         return singleQueryRepository.save(query.setAsNew())
                 .then(Mono.just(new ResponseEntity<>(HttpStatus.CREATED)));
+    }
+
+    @PutMapping
+    public Mono<ResponseEntity<Void>> update(@RequestBody SingleQuery request) {
+        return singleQueryRepository.findById(request.getQueryId())
+                .flatMap(q -> singleQueryRepository.save(request)
+                        .then(Mono.just(new ResponseEntity<Void>(HttpStatus.OK)))
+                )
+                .switchIfEmpty(Mono.error(() ->
+                        new SingleQueryNotExistsException("Query with id " + request.getQueryId() + " not found")));
     }
 
     @GetMapping
