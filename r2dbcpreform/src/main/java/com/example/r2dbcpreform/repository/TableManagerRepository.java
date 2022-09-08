@@ -54,4 +54,13 @@ public class TableManagerRepository {
         return sb.toString();
     }
 
+    public Mono<Boolean> tableExists(String tableName) {
+        final String sql = "SELECT TRUE AS F FROM INFORMATION_SCHEMA.TABLES " +
+                "WHERE TABLE_SCHEMA='PUBLIC' AND TABLE_NAME=:tablename;";
+        return DatabaseClient.create(connectionFactory).sql(sql)
+                .bind("tablename", tableName.toUpperCase())
+                .map((row, rowMataData) -> row.get("F", Boolean.class))
+                .first()
+                .defaultIfEmpty(Boolean.FALSE);
+    }
 }
