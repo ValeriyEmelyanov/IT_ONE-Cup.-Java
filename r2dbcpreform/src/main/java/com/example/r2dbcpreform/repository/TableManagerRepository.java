@@ -4,12 +4,19 @@ import com.example.r2dbcpreform.exception.BuildCreateTableSqlException;
 import com.example.r2dbcpreform.exception.CreateTableException;
 import com.example.r2dbcpreform.ui.request.TableColumnRequest;
 import com.example.r2dbcpreform.ui.request.TableRequest;
+import com.example.r2dbcpreform.ui.response.TableColumnResponse;
 import io.r2dbc.spi.ConnectionFactory;
+import io.r2dbc.spi.Row;
+import io.r2dbc.spi.RowMetadata;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.r2dbc.core.DatabaseClient;
 import org.springframework.stereotype.Repository;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.List;
+import java.util.function.BiFunction;
 
 @Repository
 @Slf4j
@@ -62,5 +69,33 @@ public class TableManagerRepository {
                 .map((row, rowMataData) -> row.get("F", Boolean.class))
                 .first()
                 .defaultIfEmpty(Boolean.FALSE);
+    }
+
+    public Flux<TableColumnResponse> getTableColumns(String tableName) {
+        final String sql = "SELECT COLUMN_NAME AS title, DATA_TYPE AS type FROM INFORMATION_SCHEMA.COLUMNS " +
+                "WHERE TABLE_SCHEMA='PUBLIC' AND TABLE_NAME=:tablename;";
+        final BiFunction<Row, RowMetadata, TableColumnResponse> mapping =
+                (row, rowMetadata) -> TableColumnResponse.builder()
+                        .title(row.get("title", String.class))
+                        .type(row.get("type", String.class))
+                        .build();
+        return DatabaseClient.create(connectionFactory).sql(sql)
+                .bind("tablename", tableName.toUpperCase())
+                .map(mapping)
+                .all();
+    }
+
+    public Flux<String> getPrimaryKey(String tableName) {
+        final String sql = "SELECT T2.COLUMN_NAME FROM " +
+                "(SELECT INDEX_NAME FROM INFORMATION_SCHEMA.INDEXES " +
+                "WHERE TABLE_SCHEMA='PUBLIC' AND TABLE_NAME=:tablename AND INDEX_TYPE_NAME='PRIMARY KEY') AS T1 " +
+                "INNER JOIN " +
+                "(SELECT INDEX_NAME, COLUMN_NAME FROM INFORMATION_SCHEMA.INDEX_COLUMNS " +
+                "WHERE TABLE_SCHEMA='PUBLIC' AND TABLE_NAME=:tablename) AS T2 " +
+                "ON T1.INDEX_NAME = T2.INDEX_NAME;";
+        return DatabaseClient.create(connectionFactory).sql(sql)
+                .bind("tablename", tableName.toUpperCase())
+                .map((row, rowMatadata) -> row.get("column_name", String.class))
+                .all();
     }
 }
