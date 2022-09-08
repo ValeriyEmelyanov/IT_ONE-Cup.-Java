@@ -1,5 +1,7 @@
 package com.example.r2dbcpreform.controller;
 
+import com.example.r2dbcpreform.exception.CreateTableException;
+import com.example.r2dbcpreform.exception.TableNotExistsException;
 import com.example.r2dbcpreform.repository.TableManagerRepository;
 import com.example.r2dbcpreform.ui.request.TableRequest;
 import com.example.r2dbcpreform.ui.response.TableColumnResponse;
@@ -24,8 +26,13 @@ public class TableManagerController {
 
     @PostMapping
     public Mono<ResponseEntity<Void>> createTable(@RequestBody TableRequest request) {
-        return tableManagerRepository.createTable(request)
-                .then(Mono.just(new ResponseEntity<>(HttpStatus.CREATED)));
+        return tableManagerRepository.tableExists(request.getTableName())
+                .flatMap(it -> !it ?
+                        tableManagerRepository.createTable(request)
+                                .then(Mono.just(new ResponseEntity<>(HttpStatus.CREATED))) :
+                        Mono.error(new CreateTableException("The table " + request.getTableName() +
+                                " already exists."))
+                );
     }
 
     @GetMapping("/{tablename}/exists")
@@ -45,15 +52,20 @@ public class TableManagerController {
 
     @GetMapping("/{tablename}")
     public Mono<TableResponse> getTableStructure(@PathVariable("tablename") String tableName) {
-        return Mono.zip(
-                        tableManagerRepository.getTableColumns(tableName).collectList(),
-                        tableManagerRepository.getPrimaryKey(tableName).collectList()
-                )
-                .map(t -> TableResponse.builder()
-                        .tableName(tableName)
-                        .columnsAmount(t.getT1().size())
-                        .primaryKey(String.join(",", t.getT2()))
-                        .columnInfos(t.getT1())
-                        .build());
+        return tableManagerRepository.tableExists(tableName)
+                .flatMap(it -> it ?
+                        Mono.zip(
+                                        tableManagerRepository.getTableColumns(tableName).collectList(),
+                                        tableManagerRepository.getPrimaryKey(tableName).collectList()
+                                )
+                                .map(t -> TableResponse.builder()
+                                        .tableName(tableName)
+                                        .columnsAmount(t.getT1().size())
+                                        .primaryKey(String.join(",", t.getT2()))
+                                        .columnInfos(t.getT1())
+                                        .build()) :
+                        Mono.error(new TableNotExistsException("The table " + tableName +
+                                " does not exist."))
+                );
     }
 }
