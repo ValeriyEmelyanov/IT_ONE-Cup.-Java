@@ -9,6 +9,7 @@ import com.example.r2dbcpreform.ui.response.TableResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -64,6 +65,17 @@ public class TableManagerController {
                                         .primaryKey(String.join(",", t.getT2()))
                                         .columnInfos(t.getT1())
                                         .build()) :
+                        Mono.error(new TableNotExistsException("The table " + tableName +
+                                " does not exist."))
+                );
+    }
+
+    @DeleteMapping("/{tablename}")
+    public Mono<ResponseEntity<Void>> deleteTable(@PathVariable("tablename") String tableName) {
+        return tableManagerRepository.tableExists(tableName)
+                .flatMap(it -> it ?
+                        tableManagerRepository.deleteTable(tableName)
+                                .then(Mono.just(new ResponseEntity<>(HttpStatus.ACCEPTED))):
                         Mono.error(new TableNotExistsException("The table " + tableName +
                                 " does not exist."))
                 );

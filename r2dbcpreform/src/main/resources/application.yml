@@ -22,6 +22,13 @@ spring:
       platform: h2
       mode: always
       schema-locations: classpath:db/schema.sql
+
+#logging:
+#  level:
+#    io:
+#      r2dbc:
+#        h2: debug
+
 ## { h2-console
 #  datasource:
 #    url: jdbc:h2:mem:~mydb;DB_CLOSE_DELAY=-1

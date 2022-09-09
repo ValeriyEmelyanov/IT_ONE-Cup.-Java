@@ -2,6 +2,7 @@ package com.example.r2dbcpreform.repository;
 
 import com.example.r2dbcpreform.exception.BuildCreateTableSqlException;
 import com.example.r2dbcpreform.exception.CreateTableException;
+import com.example.r2dbcpreform.exception.DeleteTableException;
 import com.example.r2dbcpreform.ui.request.TableColumnRequest;
 import com.example.r2dbcpreform.ui.request.TableRequest;
 import com.example.r2dbcpreform.ui.response.TableColumnResponse;
@@ -15,8 +16,9 @@ import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.List;
 import java.util.function.BiFunction;
+
+import static java.lang.String.format;
 
 @Repository
 @Slf4j
@@ -97,5 +99,17 @@ public class TableManagerRepository {
                 .bind("tablename", tableName.toUpperCase())
                 .map((row, rowMatadata) -> row.get("column_name", String.class))
                 .all();
+    }
+
+    public Mono<Void> deleteTable(String tableName) {
+        final String sql = format("DROP TABLE %s;", tableName);
+        return DatabaseClient.create(connectionFactory)
+                .sql(sql)
+                .then()
+                .doOnError(e -> {
+                    String errMessage = format("Failed to delete the table %s", tableName);
+                    log.error("{}: {}", errMessage, e.getMessage());
+                    throw new DeleteTableException(errMessage, e);
+                });
     }
 }
